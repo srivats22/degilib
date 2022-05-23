@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "913565307203",
+    "project_id": "degilib",
+    "storage_bucket": "degilib.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913565307203:android:c53f9084ddf9c4f0169ff6",
+        "android_client_info": {
+          "package_name": "com.srivats.degilib"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913565307203-1vpdkmk58r5o22vmv2ltn0kt8onpepc7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-8IZboxjkxCSFcec0P414IgsiN9dkVnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913565307203-1vpdkmk58r5o22vmv2ltn0kt8onpepc7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
