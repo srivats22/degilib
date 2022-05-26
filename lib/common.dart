@@ -20,3 +20,10 @@ final isDesktopBrowser =
     || defaultTargetPlatform == TargetPlatform.linux);
 
 IModularNavigator modular = Modular.to;
+
+List<String> categories = [
+  "artist",
+  "movie",
+  "music",
+  "shows",
+];

@@ -1,5 +1,7 @@
 import 'package:degilib/common_widget/custom_input.dart';
 import 'package:degilib/common_widget/loader.dart';
+import 'package:degilib/screens/home.dart';
+import 'package:firebase_analytics_web/utils/exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -132,8 +134,7 @@ class _AuthState extends State<Auth> {
       child: Scaffold(
         body: Center(
           child: SizedBox(
-            width: isDesktopBrowser ? MediaQuery.of(context).size.width * .75
-            : MediaQuery.of(context).size.width * .50,
+            width: MediaQuery.of(context).size.width * .75,
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +195,7 @@ class _AuthState extends State<Auth> {
     try{
       await fAuth.signInWithEmailAndPassword(
           email: _email!.text, password: _pwd!.text);
-      modular.pushReplacementNamed("/home");
+      navigateMethod();
     }
     on FirebaseAuthException catch (e){
       print(e.toString());
@@ -254,7 +255,8 @@ class _AuthState extends State<Auth> {
         "uid": user.uid,
       });
       user.sendEmailVerification();
-      modular.pushReplacementNamed("/home");
+      // modular.pushReplacementNamed("/home");
+      navigateMethod();
     }
     on FirebaseAuthException catch (e){
       print(e.toString());
@@ -290,5 +292,11 @@ class _AuthState extends State<Auth> {
         print("Wrong password, try again or reset password");
       }
     }
+  }
+
+  void navigateMethod(){
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Home()));
   }
 }

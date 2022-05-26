@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../common.dart';
+import 'loader.dart';
 
 class ProfileLayout extends StatefulWidget {
   const ProfileLayout({Key? key}) : super(key: key);
@@ -11,8 +11,27 @@ class ProfileLayout extends StatefulWidget {
 }
 
 class _ProfileLayoutState extends State<ProfileLayout> {
+  bool isLoading = true;
+  String userName = "";
+
+  void initializer(){
+    setState((){
+      userName = fAuth.currentUser!.displayName!.toUpperCase();
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    initializer();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return const Loader();
+    }
     return ListView(
       padding: const EdgeInsets.all(10),
       // shrinkWrap: true,
@@ -20,7 +39,7 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         ExcludeSemantics(
           child: CircleAvatar(
             radius: 50,
-            child: Text("${fAuth.currentUser!.displayName![0].toUpperCase()}",
+            child: Text(fAuth.currentUser!.displayName![0].toUpperCase(),
               style: Theme.of(context).textTheme.headline3
                   ?.copyWith(color: Colors.white),),
           ),
@@ -39,13 +58,13 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         style: Theme.of(context).textTheme.headline5,),
         ListTile(
           onTap: (){},
-          leading: Icon(Icons.privacy_tip),
-          title: Text("Privacy"),
+          leading: const Icon(Icons.privacy_tip),
+          title: const Text("Privacy"),
         ),
         ListTile(
           onTap: (){},
-          leading: Icon(Icons.info),
-          title: Text("About App"),
+          leading: const Icon(Icons.info),
+          title: const Text("About App"),
         ),
         const Divider(
           indent: 20,
@@ -55,13 +74,13 @@ class _ProfileLayoutState extends State<ProfileLayout> {
           style: Theme.of(context).textTheme.headline5,),
         ListTile(
           onTap: (){},
-          leading: Icon(Icons.share),
-          title: Text("Share App"),
+          leading: const Icon(Icons.share),
+          title: const Text("Share App"),
         ),
         ListTile(
           onTap: (){},
-          leading: Icon(Icons.email),
-          title: Text("Contact Developer"),
+          leading: const Icon(Icons.email),
+          title: const Text("Contact Developer"),
         ),
         const Divider(
           indent: 20,
@@ -72,14 +91,14 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         const SizedBox(height: 10,),
         ElevatedButton(
           onPressed: (){},
-          child: Text("Log out"),
+          child: const Text("Log out"),
         ),
         const SizedBox(height: 10,),
         ElevatedButton(
           onPressed: (){},
-          child: Text("Delete Account"),
           style: ElevatedButton.styleFrom(primary: Colors.red,
               onPrimary: Colors.white),
+          child: const Text("Delete Account"),
         ),
       ],
     );
