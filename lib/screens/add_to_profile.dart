@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:degilib/common_widget/custom_input.dart';
-import 'package:degilib/common_widget/loader.dart';
-import 'package:degilib/model/lib_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firestore_search/firestore_search.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../common.dart';
@@ -18,185 +15,207 @@ class AddToProfile extends StatefulWidget {
 
 class _AddToProfileState extends State<AddToProfile> {
   int index = 0;
-  TextEditingController? imgUrl, link, provider, title;
-  String searchQuery = "";
+  int selectedIndex = 0;
+  TextEditingController? imgUrl, title, provider;
+  String selectedCategory = "";
+
+  final errorSnackBar = const SnackBar(
+      content: Text("Title, Provider & Category are required fields")
+  );
 
   @override
   void initState() {
     imgUrl = TextEditingController();
-    link = TextEditingController();
+    title = TextEditingController();
     provider = TextEditingController();
-    title = TextEditingController(text: searchQuery);
     super.initState();
-  }
-
-  void initiateSearch(String val) {
-    setState(() {
-      searchQuery = val.toLowerCase().trim();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (index == 0) {
-      return SafeArea(
-          child: Scaffold(
-        appBar: AppBar(
-          centerTitle: false,
-          title: TextFormField(
-            decoration: const InputDecoration(
-              hintText: "Search by title",
-            ),
-            onChanged: (val) => initiateSearch(val),
-          ),
-        ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: searchQuery != "" && searchQuery != null
-              ? fStore
-                  .collection('lib')
-                  .where("searchQuery", arrayContains: searchQuery)
-                  .snapshots()
-              : fStore.collection("lib").snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Column(
-                  children: [
-                    Text("Looks like what you are searching for is not present"),
-                    Text("Would you like to add it to your profile?"),
-                    ButtonBar(
-                      alignment: MainAxisAlignment.center,
-                      children: [
-                        Visibility(
-                          visible: UniversalPlatform.isIOS,
-                          child: CupertinoButton(
-                            onPressed: (){
-                              modular.pop();
-                            },
-                            child: Text("Cancel"),
-                          ),
-                        ),
-                        Visibility(
-                          visible: UniversalPlatform.isIOS,
-                          child: CupertinoButton.filled(
-                            onPressed: (){
-                              setState((){
-                                index = 1;
-                              });
-                            },
-                            child: Text("Add"),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !UniversalPlatform.isIOS,
-                          child: TextButton(
-                            onPressed: (){
-                              modular.pop();
-                            },
-                            child: Text("Cancel"),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !UniversalPlatform.isIOS,
-                          child: ElevatedButton(
-                            onPressed: (){
-                              setState((){
-                                index = 1;
-                              });
-                            },
-                            child: Text("Add"),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return const Loader();
-              default:
-                return ListView(
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
-                    return ListTile(
-                      onTap: () {},
-                      leading: Image.network(document['imgUrl']),
-                      title: Text(document['title']),
-                    );
-                  }).toList(),
-                );
-            }
-          },
-        ),
-      ));
-    }
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
         body: ListView(
           shrinkWrap: true,
+          padding: const EdgeInsets.all(10),
           children: [
             CustomTextField(imgUrl!, "Image", "", "", false, TextInputType.url,
-                false, [""]),
-            CustomTextField(title!, "Title", "", "", false, TextInputType.url,
-                false, [""]),
-            CustomTextField(provider!, "provider", "Ex: Spotify, Netflix", "", false, TextInputType.url,
-                false, [""]),
-            CustomTextField(link!, "Link", "", "", false, TextInputType.url,
-                false, [""]),
+                false, const [""]),
+            const SizedBox(
+              height: 10,
+            ),
+            CustomTextField(
+                title!, "Title", "", "", false, TextInputType.url, false, const [""]),
+            const SizedBox(
+              height: 10,
+            ),
+            CustomTextField(
+                provider!, "Provider", "Ex: Spotify", "", false,
+                TextInputType.text, false, const [""]),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              "Category",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Text(
+              "Type below to select a category",
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+            Visibility(
+              visible: selectedCategory == "",
+              child: Autocomplete(
+                optionsBuilder: (TextEditingValue autoCompleteVal) {
+                  if (autoCompleteVal.text == "") {
+                    return const Iterable<String>.empty();
+                  }
+                  return categories.where((String option) {
+                    return option.contains(autoCompleteVal.text.toLowerCase());
+                  });
+                },
+                onSelected: (String selected) {
+                  setState(() {
+                    selectedCategory = selected;
+                  });
+                },
+              ),
+            ),
+            Visibility(
+              visible: selectedCategory != "",
+              child: Card(
+                child: ListTile(
+                  title: Text(selectedCategory),
+                  trailing: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = "";
+                      });
+                    },
+                    icon: UniversalPlatform.isIOS
+                        ? const Icon(CupertinoIcons.clear)
+                        : const Icon(Icons.clear),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                  "If you don't see a category that means it's not supported yet",
+                  style: Theme.of(context).textTheme.subtitle1),
+            ),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
                 Visibility(
                   visible: UniversalPlatform.isIOS,
                   child: CupertinoButton(
-                    onPressed: (){
-                      setState((){
-                        searchQuery = "";
-                      });
-                      modular.pushNamed("/home");
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
-                    child: Text("Cancel"),
+                    child: const Text("Cancel"),
                   ),
                 ),
                 Visibility(
                   visible: UniversalPlatform.isIOS,
                   child: CupertinoButton.filled(
-                    onPressed: (){
-
+                    onPressed: () {
+                      if(selectedCategory == "" || title!.text == ""
+                      || provider!.text == ""){
+                        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+                      }
+                      else{
+                        upload();
+                      }
                     },
-                    child: Text("Add"),
+                    child: const Text("Add"),
                   ),
                 ),
                 Visibility(
                   visible: !UniversalPlatform.isIOS,
                   child: TextButton(
-                    onPressed: (){
-                      setState((){
-                        searchQuery = "";
-                      });
-                      modular.pushNamed("/home");
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
-                    child: Text("Cancel"),
+                    child: const Text("Cancel"),
                   ),
                 ),
                 Visibility(
                   visible: !UniversalPlatform.isIOS,
                   child: ElevatedButton(
-                    onPressed: (){
+                    onPressed: () {
+                      if(selectedCategory == "" || title!.text == ""
+                      || provider!.text == ""){
+                        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+                      }
+                      else{
+                        upload();
+                      }
                     },
-                    child: Text("Add"),
+                    child: const Text("Add"),
                   ),
                 ),
               ],
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (UniversalPlatform.isIOS) {
+              showCupertinoDialog(
+                  context: context,
+                  builder: (context) {
+                    return CupertinoAlertDialog(
+                      title: const Text("Info"),
+                      content: const Text(
+                          "To get image, search for the content on a browser and copy the image url"),
+                      actions: [
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Close"),
+                        ),
+                      ],
+                    );
+                  });
+            }
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Help"),
+                  content: const Text(
+                      "To get image, search for the content on a browser and copy the image url"),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Close"),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: UniversalPlatform.isIOS
+              ? const Icon(CupertinoIcons.question)
+              : const Icon(Icons.help),
+        ),
       ),
     );
+  }
+
+  void upload() {
+    fStore.collection("users").doc(user!.uid).collection("posts").add({
+      "img": imgUrl!.text,
+      "title": title!.text,
+      "provider": provider!.text,
+      "category": selectedCategory,
+      "added_on": FieldValue.serverTimestamp(),
+    });
   }
 }

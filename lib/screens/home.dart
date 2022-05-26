@@ -1,12 +1,12 @@
 import 'package:degilib/common_widget/category_list.dart';
 import 'package:degilib/common_widget/loader.dart';
-import 'package:degilib/common_widget/posts.dart';
 import 'package:degilib/common_widget/profile_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:degilib/common.dart';
-import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'package:universal_platform/universal_platform.dart';
+
+import 'add_to_profile.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -18,6 +18,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool isLoading = true;
   String? userName = "";
+  TextEditingController? imgUrl, title;
 
   void initializer(){
     setState((){
@@ -29,6 +30,8 @@ class _HomeState extends State<Home> {
   initState(){
     initializer();
     isLoading = false;
+    imgUrl = TextEditingController();
+    title = TextEditingController();
     super.initState();
   }
 
@@ -63,12 +66,15 @@ class _HomeState extends State<Home> {
                 ),
                 VerticalDivider(),
                 Expanded(
-                  child: CategoryList(),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(10),
+                    child: CategoryList(),
+                  ),
                 ),
               ],
             ),
           ),
-          floatingActionButton: speedDial(),
+          floatingActionButton: fab(),
         ),
       );
     }
@@ -94,34 +100,42 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        body: const Center(
-          child: Text("On Mobile"),
+        body: ListView(
+          padding: const EdgeInsets.all(10),
+          children: [
+            ExcludeSemantics(
+              child: CircleAvatar(
+                radius: 50,
+                child: Text(fAuth.currentUser!.displayName![0].toUpperCase(),
+                  style: Theme.of(context).textTheme.headline3
+                      ?.copyWith(color: Colors.white),),
+              ),
+            ),
+            const SizedBox(height: 5,),
+            Text("${fAuth.currentUser!.displayName}",
+              style: Theme.of(context).textTheme.headline4,
+            textAlign: TextAlign.center,),
+            const Divider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            const CategoryList()
+          ],
         ),
-        floatingActionButton: speedDial(),
+        floatingActionButton: fab(),
       ),
     );
   }
 
-  Widget speedDial(){
-    return  SpeedDial(
-      speedDialChildren: [
-        SpeedDialChild(
-          onPressed: (){
-            modular.pushNamed("/add");
-          },
-          child: UniversalPlatform.isIOS ?
-          const Icon(CupertinoIcons.add) : const Icon(Icons.add),
-          label: "Add To Profile",
-        ),
-        SpeedDialChild(
-          onPressed: (){},
-          child: UniversalPlatform.isIOS ?
-          const Icon(CupertinoIcons.share) : const Icon(Icons.share),
-          label: "Share Profile",
-        ),
-      ],
-      child: UniversalPlatform.isIOS ?
-      const Icon(CupertinoIcons.add) : const Icon(Icons.add),
+  Widget fab(){
+    return FloatingActionButton(
+      onPressed: (){
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AddToProfile()));
+      },
+      tooltip: "Add to profile",
+      child: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.add) :
+      const Icon(Icons.add),
     );
   }
 }
