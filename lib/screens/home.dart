@@ -4,9 +4,9 @@ import 'package:degilib/common_widget/profile_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:degilib/common.dart';
+import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'package:universal_platform/universal_platform.dart';
-
-import 'add_to_profile.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -18,7 +18,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool isLoading = true;
   String? userName = "";
-  TextEditingController? imgUrl, title;
 
   void initializer(){
     setState((){
@@ -30,8 +29,6 @@ class _HomeState extends State<Home> {
   initState(){
     initializer();
     isLoading = false;
-    imgUrl = TextEditingController();
-    title = TextEditingController();
     super.initState();
   }
 
@@ -51,24 +48,30 @@ class _HomeState extends State<Home> {
             elevation: 0,
             title: Text(appName),
             centerTitle: false,
+            automaticallyImplyLeading: false,
             actions: [
               IconButton(
-                onPressed: (){},
+                onPressed: (){
+                  // Navigator.of(context).push(
+                  //     MaterialPageRoute(builder: (context) => const UserSearch()));
+                  modular.pushNamed("/search");
+                },
                 icon: const Icon(Icons.search),
               ),
             ],
           ),
           body: Center(
             child: Row(
-              children: const [
-                Expanded(
+              children: [
+                const Expanded(
                     child: ProfileLayout()
                 ),
-                VerticalDivider(),
+                const VerticalDivider(),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(10),
-                    child: CategoryList(),
+                    padding: const EdgeInsets.all(10),
+                    child: CategoryList(userId: '${user?.uid}',
+                      showAddToCategory: true,),
                   ),
                 ),
               ],
@@ -86,7 +89,9 @@ class _HomeState extends State<Home> {
           centerTitle: false,
           actions: [
             IconButton(
-              onPressed: (){},
+              onPressed: (){
+                modular.pushNamed("/search");
+              },
               icon: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.search)
                   : const Icon(Icons.search),
             ),
@@ -119,7 +124,8 @@ class _HomeState extends State<Home> {
               indent: 20,
               endIndent: 20,
             ),
-            const CategoryList()
+            CategoryList(userId: "${user?.uid}",
+            showAddToCategory: true,)
           ],
         ),
         floatingActionButton: fab(),
@@ -128,14 +134,28 @@ class _HomeState extends State<Home> {
   }
 
   Widget fab(){
-    return FloatingActionButton(
-      onPressed: (){
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddToProfile()));
-      },
-      tooltip: "Add to profile",
-      child: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.add) :
-      const Icon(Icons.add),
+    return SpeedDial(
+      speedDialChildren: [
+        SpeedDialChild(
+          onPressed: (){
+            modular.pushNamed("/add");
+          },
+          label: "Post",
+          child: UniversalPlatform.isIOS ?
+          const Icon(CupertinoIcons.add) : const Icon(Icons.add),
+        ),
+        SpeedDialChild(
+          onPressed: (){
+            String profileUrl = "localhost:8080/user/${fAuth.currentUser!.uid}";
+            Share.share("Here's my Degilib profile: $profileUrl");
+          },
+          label: "Share Profile",
+          child: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.share) :
+          const Icon(Icons.share),
+        ),
+      ],
+      child: UniversalPlatform.isIOS ?
+          const Icon(CupertinoIcons.add) : const Icon(Icons.add),
     );
   }
 }

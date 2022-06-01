@@ -1,14 +1,15 @@
 import 'package:degilib/common.dart';
 import 'package:degilib/common_widget/loader.dart';
-import 'package:degilib/screens/add_to_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 class CategoryPost extends StatefulWidget {
-  final String category;
-  const CategoryPost({Key? key, required this.category}) : super(key: key);
+  final String userId, category;
+  final bool showAddToCategory;
+  const CategoryPost({Key? key, required this.userId, required this.category,
+  required this.showAddToCategory}) : super(key: key);
 
   @override
   State<CategoryPost> createState() => _CategoryPostState();
@@ -27,7 +28,7 @@ class _CategoryPostState extends State<CategoryPost> {
           initialLoader: const Loader(),
           itemBuilderType: PaginateBuilderType.listView,
           query: fStore.collection("users")
-          .doc(user!.uid).collection("posts")
+          .doc(widget.userId).collection("posts")
           .where("category", isEqualTo: widget.category)
           .orderBy("added_on"),
           itemBuilder: (context, snapshot, index){
@@ -52,7 +53,8 @@ class _CategoryPostState extends State<CategoryPost> {
               subtitle: Text("Provider: ${data['provider']}"),
             );
           },
-          onEmpty: Center(
+          onEmpty: widget.showAddToCategory ?
+          Center(
             child: Column(
               children: [
                 Text("Nothing to display for ${widget.category} Category"),
@@ -73,9 +75,10 @@ class _CategoryPostState extends State<CategoryPost> {
                       visible: UniversalPlatform.isIOS,
                       child: CupertinoButton.filled(
                         onPressed: (){
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) =>
-                                  const AddToProfile()));
+                          // Navigator.of(context).push(
+                          //     MaterialPageRoute(builder: (context) =>
+                          //     const AddToProfile()));
+                          modular.pushNamed('/add');
                         },
                         child: Text("Add"),
                       ),
@@ -93,15 +96,22 @@ class _CategoryPostState extends State<CategoryPost> {
                       visible: !UniversalPlatform.isIOS,
                       child: ElevatedButton(
                         onPressed: (){
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) =>
-                              const AddToProfile()));
+                          // Navigator.of(context).push(
+                          //     MaterialPageRoute(builder: (context) =>
+                          //     const AddToProfile()));
+                          modular.pushNamed('/add');
                         },
                         child: Text("Add"),
                       ),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ) : Center(
+            child: Column(
+              children: [
+                Text("The User has not displayed anything for ${widget.category}")
               ],
             ),
           ),

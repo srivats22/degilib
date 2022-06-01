@@ -128,6 +128,7 @@ class _AddToProfileState extends State<AddToProfile> {
                       }
                       else{
                         upload();
+                        modular.pushNamed('/home');
                       }
                     },
                     child: const Text("Add"),
@@ -152,6 +153,7 @@ class _AddToProfileState extends State<AddToProfile> {
                       }
                       else{
                         upload();
+                        modular.pushNamed('/home');
                       }
                     },
                     child: const Text("Add"),
