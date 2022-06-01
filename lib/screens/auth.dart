@@ -5,7 +5,10 @@ import 'package:firebase_analytics_web/utils/exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 import '../common.dart';
 
@@ -22,6 +25,8 @@ class _AuthState extends State<Auth> {
   bool isError = false;
   String errorMsg = "";
   int _currentDisplay = 0;
+
+  final pwdResetSnackBar = const SnackBar(content: Text("Password Reset email sent"));
 
   @override
   void initState() {
@@ -46,8 +51,7 @@ class _AuthState extends State<Auth> {
         child: Scaffold(
           body: Center(
             child: SizedBox(
-              width: isDesktopBrowser ? MediaQuery.of(context).size.width * .75
-                  : MediaQuery.of(context).size.width * .50,
+              width: MediaQuery.of(context).size.width * .75,
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +69,52 @@ class _AuthState extends State<Auth> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: TextButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context){
+                              return SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Text("Forgot Password?"),
+                                    SizedBox(height: 10,),
+                                    CustomTextField(_email!,
+                                        "Registered Email", "", "", false,
+                                        TextInputType.emailAddress, false,
+                                        const [AutofillHints.email]),
+                                    const SizedBox(height: 10,),
+                                    Visibility(
+                                      visible: !UniversalPlatform.isIOS,
+                                      child: ElevatedButton(
+                                        onPressed: (){
+                                          fAuth.sendPasswordResetEmail(
+                                              email: _email!.text);
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                          .showSnackBar(pwdResetSnackBar);
+                                        },
+                                        child: const Text("Submit"),
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: UniversalPlatform.isIOS,
+                                      child: CupertinoButton(
+                                        onPressed: (){
+                                          fAuth.sendPasswordResetEmail(
+                                              email: _email!.text);
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(pwdResetSnackBar);
+                                        },
+                                        child: const Text("Submit"),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          );
+                        },
                         child: const Text("Forgot Password?"),
                       ),
                     ),
@@ -195,6 +244,15 @@ class _AuthState extends State<Auth> {
     try{
       await fAuth.signInWithEmailAndPassword(
           email: _email!.text, password: _pwd!.text);
+      final userNamePref = await SharedPreferences.getInstance();
+      final userEmailPref = await SharedPreferences.getInstance();
+
+      if(userNamePref.getString("name") == null ||
+          userEmailPref.getString("email") == null){
+        await userNamePref.setString("name", "${fAuth.currentUser?.displayName}");
+        await userEmailPref.setString("email", "${fAuth.currentUser?.email}");
+      }
+
       navigateMethod();
     }
     on FirebaseAuthException catch (e){
@@ -248,14 +306,32 @@ class _AuthState extends State<Auth> {
       User? user = (await fAuth.createUserWithEmailAndPassword(
           email: _email!.text, password: _pwd!.text)).user;
       await user!.updateDisplayName(_name!.text);
+      List<String> nameSplit = _name!.text.split(" ");
+      List<String> nameSearch = [];
+
+      for(int i = 0; i < nameSplit.length; i++){
+        for(int j = 1; j < nameSplit[i].length + 1; j++){
+          nameSearch.add(nameSplit[i].substring(0, j).toLowerCase());
+        }
+      }
+
       fStore.collection("users").doc(user.uid)
       .set({
-        "name": _name!.text,
+        "name": toBeginningOfSentenceCase(_name!.text),
         "email": _email!.text,
         "uid": user.uid,
+        "search_field": nameSearch,
       });
-      user.sendEmailVerification();
+      // user.sendEmailVerification();
       // modular.pushReplacementNamed("/home");
+      final userNamePref = await SharedPreferences.getInstance();
+      final userEmailPref = await SharedPreferences.getInstance();
+
+      if(userNamePref.getString("name") == null ||
+          userEmailPref.getString("email") == null){
+        await userNamePref.setString("name", _name!.text);
+        await userEmailPref.setString("email", _email!.text);
+      }
       navigateMethod();
     }
     on FirebaseAuthException catch (e){
@@ -295,8 +371,7 @@ class _AuthState extends State<Auth> {
   }
 
   void navigateMethod(){
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Home()));
+    // Modular.to.pushReplacementNamed('/home');
+    modular.pushReplacementNamed('/home');
   }
 }

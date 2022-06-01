@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common.dart';
 import 'loader.dart';
@@ -13,16 +15,23 @@ class ProfileLayout extends StatefulWidget {
 class _ProfileLayoutState extends State<ProfileLayout> {
   bool isLoading = true;
   String userName = "";
+  String userEmail = "";
 
-  void initializer(){
+  void initializer() async{
+    final userNamePref = await SharedPreferences.getInstance();
+    final userEmailPref = await SharedPreferences.getInstance();
     setState((){
-      userName = fAuth.currentUser!.displayName!.toUpperCase();
+      userName = userNamePref.getString("name")!;
+      userEmail = userEmailPref.getString("email")!;
       isLoading = false;
     });
   }
 
   @override
   void initState(){
+    if (kDebugMode) {
+      print("Inside Init State");
+    }
     super.initState();
     initializer();
   }
@@ -39,16 +48,16 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         ExcludeSemantics(
           child: CircleAvatar(
             radius: 50,
-            child: Text(fAuth.currentUser!.displayName![0].toUpperCase(),
+            child: Text(userName[0].toUpperCase(),
               style: Theme.of(context).textTheme.headline3
                   ?.copyWith(color: Colors.white),),
           ),
         ),
         const SizedBox(height: 5,),
-        Text("${fAuth.currentUser!.displayName}",
+        Text(userName,
           style: Theme.of(context).textTheme.headline4,),
         const SizedBox(height: 5,),
-        Text("${fAuth.currentUser!.email}",
+        Text(userEmail,
           style: Theme.of(context).textTheme.headline5,),
         const Divider(
           indent: 20,

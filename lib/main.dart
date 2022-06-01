@@ -1,6 +1,4 @@
 import 'package:degilib/common.dart';
-import 'package:degilib/screens/auth.dart';
-import 'package:degilib/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    ModularApp(
+        module: AppModule(),
+        child: const MyApp()
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Modular.setInitialRoute(
         FirebaseAuth.instance.currentUser == null ? "/" : "/home");
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: appName,
       theme: ThemeData(
@@ -72,26 +75,8 @@ class MyApp extends StatelessWidget {
               fontSize: 10, fontWeight: FontWeight.w400, letterSpacing: 1.5),
         ),
       ),
-      // routeInformationParser: Modular.routeInformationParser,
-      // routerDelegate: Modular.routerDelegate,
-      home: starting(),
-    );
-  }
-
-  Widget starting() {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.providerData.length == 1) {
-            return const Home();
-          } else {
-            return const Home();
-          }
-        } else {
-          return const Auth();
-        }
-      },
+      routeInformationParser: Modular.routeInformationParser,
+      routerDelegate: Modular.routerDelegate,
     );
   }
 }

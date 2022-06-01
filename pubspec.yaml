@@ -49,6 +49,9 @@ dependencies:
   firestore_search: ^0.1.9
   paginate_firestore: ^1.0.3+1
   simple_speed_dial: ^0.1.6
+  shared_preferences: ^2.0.15
+  share_plus: ^4.0.5
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
