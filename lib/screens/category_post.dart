@@ -68,7 +68,7 @@ class _CategoryPostState extends State<CategoryPost> {
                         onPressed: (){
                           Navigator.of(context).pop();
                         },
-                        child: Text("Cancel"),
+                        child: const Text("Cancel"),
                       ),
                     ),
                     Visibility(
@@ -80,7 +80,7 @@ class _CategoryPostState extends State<CategoryPost> {
                           //     const AddToProfile()));
                           modular.pushNamed('/add');
                         },
-                        child: Text("Add"),
+                        child: const Text("Add"),
                       ),
                     ),
                     Visibility(
@@ -89,7 +89,7 @@ class _CategoryPostState extends State<CategoryPost> {
                         onPressed: (){
                           Navigator.of(context).pop();
                         },
-                        child: Text("Cancel"),
+                        child: const Text("Cancel"),
                       ),
                     ),
                     Visibility(
@@ -101,7 +101,7 @@ class _CategoryPostState extends State<CategoryPost> {
                           //     const AddToProfile()));
                           modular.pushNamed('/add');
                         },
-                        child: Text("Add"),
+                        child: const Text("Add"),
                       ),
                     ),
                   ],

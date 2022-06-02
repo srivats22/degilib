@@ -1,11 +1,8 @@
 import 'package:degilib/common_widget/custom_input.dart';
 import 'package:degilib/common_widget/loader.dart';
-import 'package:degilib/screens/home.dart';
-import 'package:firebase_analytics_web/utils/exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
@@ -30,6 +27,9 @@ class _AuthState extends State<Auth> {
 
   @override
   void initState() {
+    if(fAuth.currentUser != null){
+      modular.navigate("/home");
+    }
     _name = TextEditingController();
     _email = TextEditingController();
     _pwd = TextEditingController();
@@ -60,11 +60,11 @@ class _AuthState extends State<Auth> {
                       style: Theme.of(context).textTheme.headline3,),
                     const SizedBox(height: 10,),
                     CustomTextField(_email!, "Email", "", "", false,
-                        TextInputType.emailAddress, false, [AutofillHints.email]),
+                        TextInputType.emailAddress, false, const [AutofillHints.email]),
                     const SizedBox(height: 10,),
                     CustomTextField(_pwd!, "Password", "", "", true,
                         TextInputType.visiblePassword, true,
-                        [AutofillHints.password]),
+                        const [AutofillHints.password]),
                     const SizedBox(height: 10,),
                     Align(
                       alignment: Alignment.bottomRight,
@@ -76,8 +76,8 @@ class _AuthState extends State<Auth> {
                               return SingleChildScrollView(
                                 child: Column(
                                   children: [
-                                    Text("Forgot Password?"),
-                                    SizedBox(height: 10,),
+                                    const Text("Forgot Password?"),
+                                    const SizedBox(height: 10,),
                                     CustomTextField(_email!,
                                         "Registered Email", "", "", false,
                                         TextInputType.emailAddress, false,
@@ -196,21 +196,21 @@ class _AuthState extends State<Auth> {
                         });
                       },
                       icon: UniversalPlatform.isIOS ?
-                      Icon(Icons.arrow_back_ios) : Icon(Icons.arrow_back),
+                      const Icon(Icons.arrow_back_ios) : const Icon(Icons.arrow_back),
                     ),
                     title: Text("Degilib",
                       style: Theme.of(context).textTheme.headline3,),
                   ),
                   const SizedBox(height: 10,),
                   CustomTextField(_name!, "Name", "", "", false,
-                      TextInputType.name, false, [AutofillHints.name]),
+                      TextInputType.name, false, const [AutofillHints.name]),
                   const SizedBox(height: 10,),
                   CustomTextField(_email!, "Email", "", "", false,
-                      TextInputType.emailAddress, false, [AutofillHints.email]),
+                      TextInputType.emailAddress, false, const [AutofillHints.email]),
                   const SizedBox(height: 10,),
                   CustomTextField(_pwd!, "Password", "", "", true,
                       TextInputType.visiblePassword, true,
-                      [AutofillHints.password]),
+                      const [AutofillHints.password]),
                   const SizedBox(height: 10,),
                   Align(
                     alignment: Alignment.center,
@@ -256,7 +256,6 @@ class _AuthState extends State<Auth> {
       navigateMethod();
     }
     on FirebaseAuthException catch (e){
-      print(e.toString());
       setState(() {
         isLoading = false;
         isError = true;
@@ -268,7 +267,6 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "email-already-in-user"
         });
-        print("Email in user, try again or reset your password");
       }
       if(e.code == 'user-not-found'){
         setState(() {
@@ -277,7 +275,6 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "account does not exist"
         });
-        print("Account does not exist");
       }
       if(e.code == 'wrong-password'){
         setState(() {
@@ -286,7 +283,6 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "wrong-password"
         });
-        print("Wrong password, try again or reset password");
       }
     }
   }
@@ -335,7 +331,6 @@ class _AuthState extends State<Auth> {
       navigateMethod();
     }
     on FirebaseAuthException catch (e){
-      print(e.toString());
       setState(() {
         isLoading = false;
         isError = true;
@@ -347,7 +342,6 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "email-already-in-user"
         });
-        print("Email in user, try again or reset your password");
       }
       if(e.code == 'user-not-found'){
         setState(() {
@@ -356,7 +350,6 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "account does not exist"
         });
-        print("Account does not exist");
       }
       if(e.code == 'wrong-password'){
         setState(() {
@@ -365,13 +358,11 @@ class _AuthState extends State<Auth> {
         fAnalytics.logEvent(name: "authentication error", parameters: {
           "type": "wrong-password"
         });
-        print("Wrong password, try again or reset password");
       }
     }
   }
 
   void navigateMethod(){
-    // Modular.to.pushReplacementNamed('/home');
-    modular.pushReplacementNamed('/home');
+    modular.pushNamedAndRemoveUntil("/home", (route) => route.isFirst);
   }
 }

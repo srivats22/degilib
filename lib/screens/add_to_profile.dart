@@ -16,7 +16,7 @@ class AddToProfile extends StatefulWidget {
 class _AddToProfileState extends State<AddToProfile> {
   int index = 0;
   int selectedIndex = 0;
-  TextEditingController? imgUrl, title, provider;
+  TextEditingController? title, provider;
   String selectedCategory = "";
 
   final errorSnackBar = const SnackBar(
@@ -25,7 +25,9 @@ class _AddToProfileState extends State<AddToProfile> {
 
   @override
   void initState() {
-    imgUrl = TextEditingController();
+    if(fAuth.currentUser == null){
+      modular.navigate("/");
+    }
     title = TextEditingController();
     provider = TextEditingController();
     super.initState();
@@ -40,11 +42,6 @@ class _AddToProfileState extends State<AddToProfile> {
           shrinkWrap: true,
           padding: const EdgeInsets.all(10),
           children: [
-            CustomTextField(imgUrl!, "Image", "", "", false, TextInputType.url,
-                false, const [""]),
-            const SizedBox(
-              height: 10,
-            ),
             CustomTextField(
                 title!, "Title", "", "", false, TextInputType.url, false, const [""]),
             const SizedBox(
@@ -213,7 +210,6 @@ class _AddToProfileState extends State<AddToProfile> {
 
   void upload() {
     fStore.collection("users").doc(user!.uid).collection("posts").add({
-      "img": imgUrl!.text,
       "title": title!.text,
       "provider": provider!.text,
       "category": selectedCategory,

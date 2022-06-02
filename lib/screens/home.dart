@@ -20,6 +20,9 @@ class _HomeState extends State<Home> {
   String? userName = "";
 
   void initializer(){
+    if(fAuth.currentUser == null){
+      modular.navigate("/");
+    }
     setState((){
       userName = fAuth.currentUser?.displayName![0].toUpperCase();
     });
@@ -54,7 +57,8 @@ class _HomeState extends State<Home> {
                 onPressed: (){
                   // Navigator.of(context).push(
                   //     MaterialPageRoute(builder: (context) => const UserSearch()));
-                  modular.pushNamed("/search");
+                  // modular.pushNamed("/search");
+                  Navigator.of(context).pushNamed("/search");
                 },
                 icon: const Icon(Icons.search),
               ),
@@ -87,16 +91,19 @@ class _HomeState extends State<Home> {
           elevation: 0,
           title: Text(appName),
           centerTitle: false,
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               onPressed: (){
-                modular.pushNamed("/search");
+                Navigator.of(context).pushNamed("/search");
               },
               icon: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.search)
                   : const Icon(Icons.search),
             ),
             TextButton(
-              onPressed: (){},
+              onPressed: (){
+                Navigator.of(context).pushNamed("/account");
+              },
               child: ExcludeSemantics(
                 child: CircleAvatar(
                   child: Text(userName!),
@@ -138,7 +145,7 @@ class _HomeState extends State<Home> {
       speedDialChildren: [
         SpeedDialChild(
           onPressed: (){
-            modular.pushNamed("/add");
+            Navigator.of(context).pushNamed("/add");
           },
           label: "Post",
           child: UniversalPlatform.isIOS ?

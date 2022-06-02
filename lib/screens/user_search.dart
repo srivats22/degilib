@@ -3,7 +3,6 @@ import 'package:degilib/common.dart';
 import 'package:degilib/common_widget/loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 class UserSearch extends StatefulWidget {
@@ -53,7 +52,7 @@ class _UserSearchState extends State<UserSearch> {
                           onTap: (){
                             var userUid = document['uid'];
                             // Routemaster.of(context).push('/user/$userUid');
-                            Modular.to.pushNamed('/user/$userUid');
+                            Navigator.of(context).pushNamed("/user/$userUid");
                           },
                           leading: ExcludeSemantics(
                             child: CircleAvatar(
