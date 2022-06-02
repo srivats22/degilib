@@ -1,8 +1,10 @@
+import 'package:degilib/common.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:universal_platform/universal_platform.dart';
 
-import '../common.dart';
 import 'loader.dart';
 
 class ProfileLayout extends StatefulWidget {
@@ -98,16 +100,43 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         Text("Account",
           style: Theme.of(context).textTheme.headline5,),
         const SizedBox(height: 10,),
-        ElevatedButton(
-          onPressed: (){},
-          child: const Text("Log out"),
+        Visibility(
+          visible: !UniversalPlatform.isIOS,
+          child: ElevatedButton(
+            onPressed: (){
+              fAuth.signOut();
+              modular.navigate("/");
+            },
+            child: const Text("Log out"),
+          ),
         ),
         const SizedBox(height: 10,),
-        ElevatedButton(
-          onPressed: (){},
-          style: ElevatedButton.styleFrom(primary: Colors.red,
-              onPrimary: Colors.white),
-          child: const Text("Delete Account"),
+        Visibility(
+          visible: !UniversalPlatform.isIOS,
+          child: ElevatedButton(
+            onPressed: (){},
+            style: ElevatedButton.styleFrom(primary: Colors.red, onPrimary: Colors.white),
+            child: const Text("Delete Account"),
+          ),
+        ),
+        Visibility(
+          visible: UniversalPlatform.isIOS,
+          child: CupertinoButton.filled(
+            onPressed: (){
+              fAuth.signOut();
+              modular.navigate("/");
+            },
+            child: const Text("Log out"),
+          ),
+        ),
+        const SizedBox(height: 10,),
+        Visibility(
+          visible: UniversalPlatform.isIOS,
+          child: CupertinoButton(
+            onPressed: (){},
+            color: Colors.red,
+            child: const Text("Delete Account"),
+          ),
         ),
       ],
     );

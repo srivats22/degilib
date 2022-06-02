@@ -1,3 +1,4 @@
+import 'package:degilib/screens/account_screen.dart';
 import 'package:degilib/screens/add_to_profile.dart';
 import 'package:degilib/screens/auth.dart';
 import 'package:degilib/screens/home.dart';
@@ -15,6 +16,7 @@ class AppModule extends Module{
     ChildRoute("/home", child: (context, args) => const Home()),
     ChildRoute("/add", child: (context, args) => const AddToProfile()),
     ChildRoute("/search", child: (context, args) => const UserSearch()),
+    ChildRoute("/account", child: (context, args) => const AccountScreen()),
     ChildRoute('/user/:uid', child: (context, args) =>
         UserDetails(uid: args.params['uid'],)),
   ];
