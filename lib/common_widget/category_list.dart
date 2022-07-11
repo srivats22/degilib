@@ -1,10 +1,11 @@
+import 'package:degilib/common.dart';
 import 'package:degilib/screens/category_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 class CategoryList extends StatelessWidget {
-  final String userId;
+  final String? userId;
   final bool showAddToCategory;
   const CategoryList({Key? key, required this.userId,
   required this.showAddToCategory}) : super(key: key);
@@ -15,13 +16,13 @@ class CategoryList extends StatelessWidget {
       children: [
         Text("Category",
         style: Theme.of(context).textTheme.headline6,),
-        lTile(context, "artist", Icons.person, "Artists", userId,
+        lTile(context, "artist", Icons.person, "Artists", userId!,
         showAddToCategory),
-        lTile(context, "movie", Icons.movie, "Movie", userId,
+        lTile(context, "movie", Icons.movie, "Movie", userId!,
         showAddToCategory),
-        lTile(context, "music", Icons.music_note, "Music", userId,
+        lTile(context, "music", Icons.music_note, "Music", userId!,
         showAddToCategory),
-        lTile(context, "shows", Icons.tv, "Shows", userId,
+        lTile(context, "shows", Icons.tv, "Shows", userId!,
         showAddToCategory),
       ],
     );

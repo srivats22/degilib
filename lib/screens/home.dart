@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(10),
-                    child: CategoryList(userId: '${user?.uid}',
+                    child: CategoryList(userId: user?.uid,
                       showAddToCategory: true,),
                   ),
                 ),
@@ -147,13 +147,13 @@ class _HomeState extends State<Home> {
           onPressed: (){
             Navigator.of(context).pushNamed("/add");
           },
-          label: "Post",
+          label: "Add to profile",
           child: UniversalPlatform.isIOS ?
           const Icon(CupertinoIcons.add) : const Icon(Icons.add),
         ),
         SpeedDialChild(
           onPressed: (){
-            String profileUrl = "localhost:8080/user/${fAuth.currentUser!.uid}";
+            String profileUrl = "localhost:8080/users/${fAuth.currentUser!.uid}";
             Share.share("Here's my Degilib profile: $profileUrl");
           },
           label: "Share Profile",
