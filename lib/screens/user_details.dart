@@ -35,7 +35,11 @@ class _UserDetailsState extends State<UserDetails> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text("Degilib"),
+          centerTitle: false,
+        ),
         body: isLoading ? const Loader() : userDisplay(),
       ),
     );

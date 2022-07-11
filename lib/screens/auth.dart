@@ -363,6 +363,7 @@ class _AuthState extends State<Auth> {
   }
 
   void navigateMethod(){
-    modular.pushNamedAndRemoveUntil("/home", (route) => route.isFirst);
+    // modular.pushNamedAndRemoveUntil("/home", (route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed("/home");
   }
 }

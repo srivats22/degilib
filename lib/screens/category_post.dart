@@ -33,24 +33,26 @@ class _CategoryPostState extends State<CategoryPost> {
           .orderBy("added_on"),
           itemBuilder: (context, snapshot, index){
             final data = snapshot[index].data() as Map?;
-            if(data!['img'] == ""){
-              return ListTile(
-                leading: ExcludeSemantics(
-                  child: CircleAvatar(
-                    child: UniversalPlatform.isIOS ?
-                    const Icon(CupertinoIcons.photo) : const Icon(Icons.photo),
-                  ),
-                ),
-                title: Text(data['title']),
-                subtitle: Text("Provider: ${data['provider']}"),
-              );
-            }
+            // if(data!['img'] == ""){
+            //   return ListTile(
+            //     leading: ExcludeSemantics(
+            //       child: CircleAvatar(
+            //         child: UniversalPlatform.isIOS ?
+            //         const Icon(CupertinoIcons.photo) : const Icon(Icons.photo),
+            //       ),
+            //     ),
+            //     title: Text(data['title']),
+            //     subtitle: Text("Provider: ${data['provider']}"),
+            //   );
+            // }
             return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(data['img']),
+              leading: ExcludeSemantics(
+                child: CircleAvatar(
+                  child: Text(data!['name'][0]),
+                ),
               ),
-              title: Text(data['title']),
-              subtitle: Text("Provider: ${data['provider']}"),
+              title: Text(data['name']),
+              subtitle: Text(data['providers']),
             );
           },
           onEmpty: widget.showAddToCategory ?

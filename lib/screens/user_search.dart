@@ -52,7 +52,8 @@ class _UserSearchState extends State<UserSearch> {
                           onTap: (){
                             var userUid = document['uid'];
                             // Routemaster.of(context).push('/user/$userUid');
-                            Navigator.of(context).pushNamed("/user/$userUid");
+                            // Navigator.of(context).pushNamed("/user/$userUid");
+                            Navigator.of(context).pushNamed("/users/$userUid");
                           },
                           leading: ExcludeSemantics(
                             child: CircleAvatar(

@@ -16,7 +16,7 @@ class AddToProfile extends StatefulWidget {
 class _AddToProfileState extends State<AddToProfile> {
   int index = 0;
   int selectedIndex = 0;
-  TextEditingController? title, provider;
+  TextEditingController? name, providers;
   String selectedCategory = "";
 
   final errorSnackBar = const SnackBar(
@@ -28,8 +28,8 @@ class _AddToProfileState extends State<AddToProfile> {
     if(fAuth.currentUser == null){
       modular.navigate("/");
     }
-    title = TextEditingController();
-    provider = TextEditingController();
+    name = TextEditingController();
+    providers = TextEditingController();
     super.initState();
   }
 
@@ -43,12 +43,12 @@ class _AddToProfileState extends State<AddToProfile> {
           padding: const EdgeInsets.all(10),
           children: [
             CustomTextField(
-                title!, "Title", "", "", false, TextInputType.url, false, const [""]),
+                name!, "Name", "", "", false, TextInputType.text, false, const [""]),
             const SizedBox(
               height: 10,
             ),
             CustomTextField(
-                provider!, "Provider", "Ex: Spotify", "", false,
+                providers!, "Providers", "Ex: Spotify", "", false,
                 TextInputType.text, false, const [""]),
             const SizedBox(
               height: 10,
@@ -119,8 +119,8 @@ class _AddToProfileState extends State<AddToProfile> {
                   visible: UniversalPlatform.isIOS,
                   child: CupertinoButton.filled(
                     onPressed: () {
-                      if(selectedCategory == "" || title!.text == ""
-                      || provider!.text == ""){
+                      if(selectedCategory == "" || name!.text == ""
+                      || providers!.text == ""){
                         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
                       }
                       else{
@@ -144,8 +144,8 @@ class _AddToProfileState extends State<AddToProfile> {
                   visible: !UniversalPlatform.isIOS,
                   child: ElevatedButton(
                     onPressed: () {
-                      if(selectedCategory == "" || title!.text == ""
-                      || provider!.text == ""){
+                      if(selectedCategory == "" || name!.text == ""
+                      || providers!.text == ""){
                         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
                       }
                       else{
@@ -160,58 +160,14 @@ class _AddToProfileState extends State<AddToProfile> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (UniversalPlatform.isIOS) {
-              showCupertinoDialog(
-                  context: context,
-                  builder: (context) {
-                    return CupertinoAlertDialog(
-                      title: const Text("Info"),
-                      content: const Text(
-                          "To get image, search for the content on a browser and copy the image url"),
-                      actions: [
-                        CupertinoDialogAction(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Close"),
-                        ),
-                      ],
-                    );
-                  });
-            }
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Help"),
-                  content: const Text(
-                      "To get image, search for the content on a browser and copy the image url"),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Close"),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: UniversalPlatform.isIOS
-              ? const Icon(CupertinoIcons.question)
-              : const Icon(Icons.help),
-        ),
       ),
     );
   }
 
   void upload() {
     fStore.collection("users").doc(user!.uid).collection("posts").add({
-      "title": title!.text,
-      "provider": provider!.text,
+      "name": name!.text,
+      "providers": providers!.text,
       "category": selectedCategory,
       "added_on": FieldValue.serverTimestamp(),
     });
