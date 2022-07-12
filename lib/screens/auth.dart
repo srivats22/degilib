@@ -27,9 +27,6 @@ class _AuthState extends State<Auth> {
 
   @override
   void initState() {
-    if(fAuth.currentUser != null){
-      modular.navigate("/home");
-    }
     _name = TextEditingController();
     _email = TextEditingController();
     _pwd = TextEditingController();
@@ -243,15 +240,12 @@ class _AuthState extends State<Auth> {
   void login() async{
     try{
       await fAuth.signInWithEmailAndPassword(
-          email: _email!.text, password: _pwd!.text);
+          email: _email!.text.trim(), password: _pwd!.text.trim());
       final userNamePref = await SharedPreferences.getInstance();
       final userEmailPref = await SharedPreferences.getInstance();
 
-      if(userNamePref.getString("name") == null ||
-          userEmailPref.getString("email") == null){
-        await userNamePref.setString("name", "${fAuth.currentUser?.displayName}");
-        await userEmailPref.setString("email", "${fAuth.currentUser?.email}");
-      }
+      await userNamePref.setString("name", "${fAuth.currentUser?.displayName}");
+      await userEmailPref.setString("email", "${fAuth.currentUser?.email}");
 
       navigateMethod();
     }
@@ -300,7 +294,7 @@ class _AuthState extends State<Auth> {
     }
     try{
       User? user = (await fAuth.createUserWithEmailAndPassword(
-          email: _email!.text, password: _pwd!.text)).user;
+          email: _email!.text.trim(), password: _pwd!.text.trim())).user;
       await user!.updateDisplayName(_name!.text);
       List<String> nameSplit = _name!.text.split(" ");
       List<String> nameSearch = [];
@@ -323,11 +317,8 @@ class _AuthState extends State<Auth> {
       final userNamePref = await SharedPreferences.getInstance();
       final userEmailPref = await SharedPreferences.getInstance();
 
-      if(userNamePref.getString("name") == null ||
-          userEmailPref.getString("email") == null){
-        await userNamePref.setString("name", _name!.text);
-        await userEmailPref.setString("email", _email!.text);
-      }
+      await userNamePref.setString("name", _name!.text);
+      await userEmailPref.setString("email", _email!.text);
       navigateMethod();
     }
     on FirebaseAuthException catch (e){

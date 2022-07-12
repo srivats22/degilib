@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
 String appName = "Degilib";
 
@@ -19,11 +18,11 @@ final isDesktopBrowser =
         defaultTargetPlatform == TargetPlatform.windows
     || defaultTargetPlatform == TargetPlatform.linux);
 
-IModularNavigator modular = Modular.to;
-
 List<String> categories = [
   "artist",
   "movie",
   "music",
   "shows",
 ];
+
+String privacyUrl = "https://srivats22.notion.site/Degilib-Privacy-6260fca2204c4be3b892fcfa73979136";

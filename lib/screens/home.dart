@@ -2,11 +2,14 @@ import 'package:degilib/common_widget/category_list.dart';
 import 'package:degilib/common_widget/loader.dart';
 import 'package:degilib/common_widget/profile_layout.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:degilib/common.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,9 +23,6 @@ class _HomeState extends State<Home> {
   String? userName = "";
 
   void initializer(){
-    if(fAuth.currentUser == null){
-      modular.navigate("/");
-    }
     setState((){
       userName = fAuth.currentUser?.displayName![0].toUpperCase();
     });
@@ -52,17 +52,6 @@ class _HomeState extends State<Home> {
             title: Text(appName),
             centerTitle: false,
             automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                onPressed: (){
-                  // Navigator.of(context).push(
-                  //     MaterialPageRoute(builder: (context) => const UserSearch()));
-                  // modular.pushNamed("/search");
-                  Navigator.of(context).pushNamed("/search");
-                },
-                icon: const Icon(Icons.search),
-              ),
-            ],
           ),
           body: Center(
             child: Row(
@@ -93,13 +82,6 @@ class _HomeState extends State<Home> {
           centerTitle: false,
           automaticallyImplyLeading: false,
           actions: [
-            IconButton(
-              onPressed: (){
-                Navigator.of(context).pushNamed("/search");
-              },
-              icon: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.search)
-                  : const Icon(Icons.search),
-            ),
             TextButton(
               onPressed: (){
                 Navigator.of(context).pushNamed("/account");
@@ -118,7 +100,7 @@ class _HomeState extends State<Home> {
             ExcludeSemantics(
               child: CircleAvatar(
                 radius: 50,
-                child: Text(fAuth.currentUser!.displayName![0].toUpperCase(),
+                child: Text(userName![0].toUpperCase(),
                   style: Theme.of(context).textTheme.headline3
                       ?.copyWith(color: Colors.white),),
               ),
@@ -153,8 +135,32 @@ class _HomeState extends State<Home> {
         ),
         SpeedDialChild(
           onPressed: (){
-            String profileUrl = "localhost:8080/users/${fAuth.currentUser!.uid}";
-            Share.share("Here's my Degilib profile: $profileUrl");
+            // debug
+            if(kDebugMode){
+              String debugProfileUrl = "localhost:8080/users/${fAuth.currentUser!.uid}";
+              if(isDesktopBrowser){
+                Clipboard.setData(ClipboardData(text: debugProfileUrl)).then((_){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Profile copied to clipboard")));
+                });
+              }
+              else{
+                Share.share("Here's my Degilib profile: $debugProfileUrl");
+              }
+            }
+            // release
+            else{
+              String profileUrl = "degilib.web.app/users/${fAuth.currentUser!.uid}";
+              if(isDesktopBrowser){
+                Clipboard.setData(ClipboardData(text: profileUrl)).then((_){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Profile copied to clipboard")));
+                });
+              }
+              else{
+                Share.share("Here's my Degilib profile: $profileUrl");
+              }
+            }
           },
           label: "Share Profile",
           child: UniversalPlatform.isIOS ? const Icon(CupertinoIcons.share) :

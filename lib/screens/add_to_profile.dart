@@ -25,9 +25,6 @@ class _AddToProfileState extends State<AddToProfile> {
 
   @override
   void initState() {
-    if(fAuth.currentUser == null){
-      modular.navigate("/");
-    }
     name = TextEditingController();
     providers = TextEditingController();
     super.initState();
@@ -110,7 +107,7 @@ class _AddToProfileState extends State<AddToProfile> {
                   visible: UniversalPlatform.isIOS,
                   child: CupertinoButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed("/home");
                     },
                     child: const Text("Cancel"),
                   ),
@@ -125,7 +122,7 @@ class _AddToProfileState extends State<AddToProfile> {
                       }
                       else{
                         upload();
-                        modular.pushNamed('/home');
+                        Navigator.of(context).pushNamed("/home");
                       }
                     },
                     child: const Text("Add"),
@@ -135,7 +132,7 @@ class _AddToProfileState extends State<AddToProfile> {
                   visible: !UniversalPlatform.isIOS,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed("/home");
                     },
                     child: const Text("Cancel"),
                   ),
@@ -150,7 +147,7 @@ class _AddToProfileState extends State<AddToProfile> {
                       }
                       else{
                         upload();
-                        modular.pushNamed('/home');
+                        Navigator.of(context).pushNamed("/home");
                       }
                     },
                     child: const Text("Add"),

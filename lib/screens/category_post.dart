@@ -80,7 +80,7 @@ class _CategoryPostState extends State<CategoryPost> {
                           // Navigator.of(context).push(
                           //     MaterialPageRoute(builder: (context) =>
                           //     const AddToProfile()));
-                          modular.pushNamed('/add');
+                          Navigator.of(context).pushNamed("/add");
                         },
                         child: const Text("Add"),
                       ),
@@ -101,7 +101,7 @@ class _CategoryPostState extends State<CategoryPost> {
                           // Navigator.of(context).push(
                           //     MaterialPageRoute(builder: (context) =>
                           //     const AddToProfile()));
-                          modular.pushNamed('/add');
+                          Navigator.of(context).pushNamed("/add");
                         },
                         child: const Text("Add"),
                       ),

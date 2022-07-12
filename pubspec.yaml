@@ -41,7 +41,6 @@ dependencies:
   firebase_analytics_web: ^0.4.0+12
 
   # misc dependencies
-  flutter_modular: ^5.0.1
   google_fonts: ^2.3.2
   universal_platform: ^1.0.0+1
   url_launcher: ^6.1.2
@@ -53,7 +52,6 @@ dependencies:
   share_plus: ^4.0.5
   intl: ^0.17.0
   dynamic_color: ^1.4.0
-  routemaster: ^1.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

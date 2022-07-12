@@ -12,9 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:url_strategy/url_strategy.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
-import 'app_module.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -38,18 +36,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // Modular.setInitialRoute(
-    //     FirebaseAuth.instance.currentUser == null ? "/" : "/home");
     return DynamicColorBuilder(
         builder: (ColorScheme? lightColorScheme, ColorScheme? darkColorScheme) {
-          // return MaterialApp.router(
-          //   debugShowCheckedModeBanner: false,
-          //   title: appName,
-          //   theme: AppTheme.lightTheme(lightColorScheme),
-          //   darkTheme: AppTheme.lightTheme(lightColorScheme),
-          //   routeInformationParser: Modular.routeInformationParser,
-          //   routerDelegate: Modular.routerDelegate,
-          // );
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: appName,

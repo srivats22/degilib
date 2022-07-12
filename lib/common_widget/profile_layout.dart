@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:degilib/common.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_platform/universal_platform.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'loader.dart';
 
@@ -31,9 +32,6 @@ class _ProfileLayoutState extends State<ProfileLayout> {
 
   @override
   void initState(){
-    if (kDebugMode) {
-      print("Inside Init State");
-    }
     super.initState();
     initializer();
   }
@@ -68,12 +66,24 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         Text("App Related",
         style: Theme.of(context).textTheme.headline5,),
         ListTile(
-          onTap: (){},
+          onTap: (){
+            if(canLaunchUrl(Uri.parse("$privacyUrl")) != null){
+              launchUrl(Uri.parse("${privacyUrl}"));
+            }
+          },
           leading: const Icon(Icons.privacy_tip),
           title: const Text("Privacy"),
         ),
         ListTile(
-          onTap: (){},
+          onTap: (){
+            showAboutDialog(
+              context: context,
+              applicationName: "${appName}",
+              children: [
+                Text("$appName is a digital library to showcase all that you love"),
+              ]
+            );
+          },
           leading: const Icon(Icons.info),
           title: const Text("About App"),
         ),
@@ -84,12 +94,23 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         Text("General",
           style: Theme.of(context).textTheme.headline5,),
         ListTile(
-          onTap: (){},
+          onTap: (){
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Feature will be enabled later")));
+          },
           leading: const Icon(Icons.share),
           title: const Text("Share App"),
         ),
         ListTile(
-          onTap: (){},
+          onTap: (){
+            final Uri mail = Uri(
+              scheme: 'mailto',
+              path: 'srivats.venkataraman@gmail.com'
+            );
+            if(canLaunchUrl(Uri.parse(mail.toString())) != null){
+              launchUrl(mail);
+            }
+          },
           leading: const Icon(Icons.email),
           title: const Text("Contact Developer"),
         ),
@@ -105,7 +126,8 @@ class _ProfileLayoutState extends State<ProfileLayout> {
           child: ElevatedButton(
             onPressed: (){
               fAuth.signOut();
-              modular.navigate("/");
+              Navigator.of(context).pushNamedAndRemoveUntil("/",
+                      (Route<dynamic> route) => false);
             },
             child: const Text("Log out"),
           ),
@@ -114,7 +136,36 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         Visibility(
           visible: !UniversalPlatform.isIOS,
           child: ElevatedButton(
-            onPressed: (){},
+            onPressed: (){
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Delete Account?"),
+                      content: const Text("This action cannot be undone and all data will be deleted"),
+                      actions: [
+                        TextButton(
+                          onPressed: (){
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: (){
+                            accountDelete();
+                            Navigator.of(context).pushNamedAndRemoveUntil("/",
+                                    (Route<dynamic> route) => false);
+                          },
+                          style: ElevatedButton.styleFrom(primary: Colors.red,
+                              onPrimary: Colors.white),
+                          child: const Text("Delete",
+                            style: TextStyle(fontWeight: FontWeight.bold),),
+                        ),
+                      ],
+                    );
+                  }
+              );
+            },
             style: ElevatedButton.styleFrom(primary: Colors.red, onPrimary: Colors.white),
             child: const Text("Delete Account"),
           ),
@@ -124,7 +175,8 @@ class _ProfileLayoutState extends State<ProfileLayout> {
           child: CupertinoButton.filled(
             onPressed: (){
               fAuth.signOut();
-              modular.navigate("/");
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context).pushReplacementNamed("/");
             },
             child: const Text("Log out"),
           ),
@@ -133,12 +185,58 @@ class _ProfileLayoutState extends State<ProfileLayout> {
         Visibility(
           visible: UniversalPlatform.isIOS,
           child: CupertinoButton(
-            onPressed: (){},
+            onPressed: (){
+              showCupertinoDialog(
+                context: context,
+                builder: (context){
+                  return CupertinoAlertDialog(
+                    title: const Text("Delete Account?"),
+                    content: const Text("This action cannot be undone and all data will be deleted"),
+                    actions: [
+                      CupertinoDialogAction(
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        onPressed: (){
+                          accountDelete();
+                          Navigator.of(context).pushNamedAndRemoveUntil("/",
+                                  (Route<dynamic> route) => false);
+                        },
+                        isDestructiveAction: true,
+                        child: const Text("Delete"),
+                      ),
+                    ],
+                  );
+                }
+              );
+            },
             color: Colors.red,
             child: const Text("Delete Account"),
           ),
         ),
       ],
     );
+  }
+
+  void accountDelete() async{
+    // deletes the post collection
+    Future<QuerySnapshot> tasks = fStore
+        .collection("users").doc(user!.uid).collection("posts").get();
+    await tasks.then((value) => {
+      value.docs.forEach((element) {
+        FirebaseFirestore.instance
+            .collection("users").doc(user!.uid).collection("posts")
+            .doc(element.id).delete();
+      })
+    });
+    // deletes the users doc
+    fStore.collection("users")
+        .doc(user!.uid).delete();
+    // deletes the user
+    fAuth.currentUser!.delete();
   }
 }

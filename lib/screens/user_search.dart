@@ -15,6 +15,7 @@ class UserSearch extends StatefulWidget {
 class _UserSearchState extends State<UserSearch> {
   String query = "";
   TextEditingController searchQuery = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -27,12 +28,12 @@ class _UserSearchState extends State<UserSearch> {
               ? fStore
                   .collection('users')
                   .where("search_field", arrayContains: query)
-                  .where("name",
-                  isNotEqualTo: "${fAuth.currentUser!.displayName}")
+                  .where("uid",
+                  isNotEqualTo: fAuth.currentUser!.uid)
                   .limit(3)
                   .snapshots()
-              : fStore.collection("users").where("name",
-              isNotEqualTo: "${fAuth.currentUser!.displayName}")
+              : fStore.collection("users").where("uid",
+              isNotEqualTo: fAuth.currentUser!.uid)
               .limit(3).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

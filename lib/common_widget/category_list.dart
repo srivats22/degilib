@@ -1,4 +1,3 @@
-import 'package:degilib/common.dart';
 import 'package:degilib/screens/category_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
